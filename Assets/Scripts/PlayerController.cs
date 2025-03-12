@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     public SkeletonAnimation skeletonanimation;
 
-    public AnimationReferenceAsset idle, walking, death;
+    public AnimationReferenceAsset idle, walking, death,winanimation;
 
     public String currentstate;
 
@@ -55,6 +55,10 @@ public class PlayerController : MonoBehaviour
         if (state.Equals("Death"))
         {
             SetAnimation(death, true, 1f);
+        }
+        if (state.Equals("Win"))
+        {
+            SetAnimation(winanimation, true, 1f);
         }
     }
 
@@ -129,6 +133,18 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void Win()
+    {
+        rb2d.constraints = RigidbodyConstraints2D.FreezePosition;
+        this.enabled = false;
+        SetCharacterstate("Win");
+
+        float animationTime = winanimation.Animation.Duration;
+        Invoke("Restart", animationTime);
+
+
+
+    }
 
     private void FixedUpdate()
     {
@@ -150,6 +166,10 @@ public class PlayerController : MonoBehaviour
         if(collision.gameObject.layer == 6)
         {
             Death();
+        }
+        if (collision.gameObject.layer == 7)
+        {
+            Win();
         }
     }
 
