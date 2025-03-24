@@ -10,7 +10,14 @@ using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject respawnpoint;
+
+    public GameObject player;
+
+
     public Rigidbody2D rb2d;
+
+    private bool isDead = false;
 
     public float MoveSpeed;
 
@@ -114,11 +121,30 @@ public class PlayerController : MonoBehaviour
 
     private void Death()
     {
+        if (isDead) return; 
+
+        isDead = true; 
         rb2d.constraints = RigidbodyConstraints2D.FreezePosition;
         this.enabled = false;
         SetCharacterstate("Death");
+
         float animationTime = death.Animation.Duration;
-        Invoke("Restart", animationTime);
+        StartCoroutine(RespawnAfterDelay(animationTime));
+    }
+
+    private IEnumerator RespawnAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        player.transform.position = respawnpoint.transform.position;
+        rb2d.velocity = Vector2.zero; 
+        rb2d.constraints = RigidbodyConstraints2D.FreezeRotation; 
+        rb2d.simulated = true; 
+
+        isDead = false;
+        this.enabled = true;
+
+        SetCharacterstate("Idle"); 
     }
 
     private void Restart()
